@@ -242,6 +242,6 @@ A user browses available listings based on filter criteria.
 This document brings together the core design and architecture of the HBnB project to support a smooth development process. It will be regularly updated as the project evolves, ensuring the team stays aligned and informed throughout implementation.
 
 ## Authors
-Faduma Abdihashi
-Kassandra Iatrou
-Alex Atanasovski
+Faduma Abdihashi  
+Kassandra Iatrou  
+Alex Atanasovski  
