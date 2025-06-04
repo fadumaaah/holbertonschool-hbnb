@@ -1,4 +1,4 @@
-# HBnB Evolution
+# 🏘️ HBnB Evolution
 
 ## Table of Contents
 
@@ -19,6 +19,38 @@ By bringing all of this together, the document will guide the implementation pha
 
 
 ## 1. High-Level Architecture:
+### Package Diagram
+![Package Diagram](/diagrams/package_diagram.png)
+This diagram shows the high-level structure of the HBnB application using a three-layer architecture. It highlights how components are grouped and how they communicate through a Facade Pattern.
+
+### 1. Presentation Layer (API, Services)
+Handles user interaction. Includes:
+- API endpoints (e.g., register, book, review)
+- Services for request processing and validation  
+Sends requests to the Facade, which connects to business logic.  
+**Role:** Receives input and forwards it to core logic.
+
+### 2. Business Logic Layer (Models)
+Contains the main logic and system rules. Key models:
+- User, Place, Review, Amenity, Booking  
+Processes input, enforces rules, and interacts with the persistence layer.  
+**Role:** Executes business rules and coordinates operations.
+
+### 3. Persistence Layer (Repositories)
+Manages data access. Repositories provide structured interaction with the database for:
+- Users, Places, Reviews, Bookings, Amenities  
+**Role:** Provides access to stored data in a clean, reusable way.
+
+### Facade Pattern
+The Facade sits between the Presentation Layer and Business Logic. It simplifies communication by exposing a unified interface to the core logic.  
+**Purpose:** Hides complexity and promotes separation of concerns.
+
+### Communication Flow (One-Line Summary)
+- Presentation → Facade: Sends input through a unified interface  
+- Facade → Business Logic: Delegates request to relevant logic  
+- Business Logic → Persistence: Retrieves or stores data via repositories
+
+*This architecture improves modularity, testability, and maintainability.*
 
 
 ## 2. Business Logic Layer:
@@ -210,6 +242,6 @@ A user browses available listings based on filter criteria.
 This document brings together the core design and architecture of the HBnB project to support a smooth development process. It will be regularly updated as the project evolves, ensuring the team stays aligned and informed throughout implementation.
 
 ## Authors
-Kassandra Iatrou  
-Faduma Abdihashi  
+Faduma Abdihashi
+Kassandra Iatrou
 Alex Atanasovski
