@@ -25,7 +25,7 @@ This diagram shows the high-level structure of the HBnB application using a thre
 
 ### 1. Presentation Layer (API, Services)
 Handles user interaction. Includes:
-- API endpoints (e.g., register, book, review)
+- API routes (e.g., register, book, review)
 - Services for request processing and validation  
 Sends requests to the Facade, which connects to business logic.  
 **Role:** Receives input and forwards it to core logic.
