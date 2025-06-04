@@ -1,10 +1,13 @@
-
-
-
 # HBnB Evolution
 
-### Table of Contents
+## Table of Contents
 
+- [Introduction](#introduction)
+- [1. High-Level Architecture](#1-high-level-architecture)
+- [2. Business Logic Layer](#2-business-logic-layer)
+- [3. API Interaction Flow](#3-api-interaction-flow)
+- [Conclusion](#conclusion)
+- [Authors](#authors)
 
 ## Introduction
 This document serves as the technical foundation for the HBnB project, a platform designed for users to find, book, and review short-term rental properties. The goal of the HBnB system is to provide a smooth and reliable experience for both guests and hosts, supporting features like user registration, place listings, bookings, reviews, and amenity management.
@@ -19,7 +22,7 @@ By bringing all of this together, the document will guide the implementation pha
 
 
 ## 2. Business Logic Layer:
-![My Photo](/diagrams/class_uml.png)
+![Class Diagram](/diagrams/class_uml.png)
 The class diagram provides a clear overview of the core entities in the business logic layer—such as User, Place, Review, and Amenity—and how they relate to each other. It supports modular design, making the system easier to develop, maintain, and scale. This diagram fits into the overall architecture by defining the structure and rules that guide how data is processed between the API layer and the database.
 ### Base Model<br>
 Parent class that provides common attributes and functionality for all other classes in the system <br>
@@ -136,6 +139,8 @@ Represents a city where places can be located.
 
 A user signs up for a new account
 
+![User Registration](/diagrams/user_registration.png)
+
 1. **User Action**: Sends `POST /users/register` with name, email, and password.
 2. **API Layer**: Validates input (e.g. required fields, email format) and forwards to Business Logic.
 3. **Business Logic**: Checks for existing email, hashes password, calls `inputUser(userData)`.
@@ -149,6 +154,8 @@ A user signs up for a new account
    `{ "error": "An account with this email already exists." }`
 
  🔁 **Place Creation** 
+
+![Place Creation](/diagrams/place_creation.png)
 
 A user creates a new place listing
 
@@ -166,6 +173,8 @@ A user creates a new place listing
 
  🔁 **Review Submission**  
 
+![Review Submission](/diagrams/review_submission.png)
+
 A user submits a review for a place.
 
 1. **User Action**: Sends `POST /places/{id}/reviews` with rating and comment.
@@ -182,6 +191,9 @@ A user submits a review for a place.
 
 
  🔁 **Fetching a List of Places** 
+
+![Fetch List of Places](/diagrams/fetch_list.png)
+
 A user browses available listings based on filter criteria.
 1. **User Action**: Sends `GET /places?filters=...` to retrieve places based on filters (e.g., location or price).
 2. **API Layer**: Receives the request and forwards the filters to the Business Logic layer.  
@@ -193,6 +205,7 @@ A user browses available listings based on filter criteria.
    `{ "error": "Invalid filter parameters." }`  
    - `500 Internal Server Error`  
    `{ "error": "Could not fetch places at this time." }`
+
 ## Conclusion
 This document brings together the core design and architecture of the HBnB project to support a smooth development process. It will be regularly updated as the project evolves, ensuring the team stays aligned and informed throughout implementation.
 
