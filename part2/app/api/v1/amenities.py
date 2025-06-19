@@ -19,7 +19,7 @@ class AmenityList(Resource):
         amenity_data = api.payload
 
         try:
-            new_amenity = facade.create_amenity(amenity_data['name'])
+            new_amenity = facade.create_amenity(amenity_data)
             return ({
                 'id': new_amenity.id,
                 'name': new_amenity.name
@@ -72,4 +72,3 @@ class AmenityResource(Resource):
             return {'error': str(e)}, 400
         except Exception as e:
             return {'error': 'Internal Server Error'}, 500
-

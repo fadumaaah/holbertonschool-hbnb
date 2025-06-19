@@ -1,4 +1,6 @@
 from app.persistence.repository import InMemoryRepository
+from app.models.amenity import Amenity
+
 
 class HBnBFacade:
     def __init__(self):
@@ -18,18 +20,32 @@ class HBnBFacade:
         pass
 
     def create_amenity(self, amenity_data):
-    # Placeholder for logic to create an amenity
-        pass
+       existing = self.get_amenity_by_name(amenity_data.get('name'))
+       if existing:
+           raise ValueError('Amenity already exists')
+       # Create amenity instance from dict, add it to repo and return created amenity
+       amenity = Amenity(**amenity_data)
+       self.amenity_repo.add(amenity)
+       return amenity
 
     def get_amenity(self, amenity_id):
-    # Placeholder for logic to retrieve an amenity by ID
-        pass
-
+        return self.amenity_repo.get(amenity_id)
+    
+    ### Need to debug, it does not work for getting an amenity by name
+    def get_amenity_by_name(self, name):
+        return self.amenity_repo.get_by_attribute('name', name)
+ 
     def get_all_amenities(self):
-    # Placeholder for logic to retrieve all amenities
-        pass
-
+        return self.amenity_repo.get_all()
+    
     def update_amenity(self, amenity_id, amenity_data):
-    # Placeholder for logic to update an amenity
-        pass
+        amenity = self.amenity_repo.get(amenity_id)
+        if not amenity:
+            return {'error': 'Amenity not found'}, 404
+    
+        self.amenity_repo.update(amenity_id, amenity_data)
+        return amenity
+
+
+    
     
