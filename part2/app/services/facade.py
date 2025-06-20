@@ -1,10 +1,5 @@
 from app.persistence.repository import InMemoryRepository
-<<<<<<< HEAD
 from app.models.user import User
-=======
-from app.models.amenity import Amenity
-
->>>>>>> db7586c5506568bff91a85c2c1c61b230f3c659a
 
 class HBnBFacade:
     def __init__(self):
@@ -67,7 +62,7 @@ class HBnBFacade:
        if existing:
            raise ValueError('Amenity already exists')
        # Create amenity instance from dict, add it to repo and return created amenity
-       amenity = Amenity(**amenity_data)
+       amenity = amenity(**amenity_data)
        self.amenity_repo.add(amenity)
        return amenity
 
