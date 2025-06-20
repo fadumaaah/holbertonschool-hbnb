@@ -1,5 +1,7 @@
 from app.persistence.repository import InMemoryRepository
 from app.models.user import User
+from app.models.place import Place
+from datetime import datetime
 
 class HBnBFacade:
     def __init__(self):
@@ -83,7 +85,62 @@ class HBnBFacade:
     
         self.amenity_repo.update(amenity_id, amenity_data)
         return amenity
-
-
     
+    def create_place(self, place_data: dict):
+        owner = self.get_user(place_data.get("owner_id"))
+        if not owner:
+            raise ValueError("owner_id does not correspond to an existing user")
+
+        amenities = []
+        for aid in place_data.get("amenity_ids", []):
+            amenity = self.get_amenity(aid)
+            if not amenity:
+                raise ValueError(f"Amenity id '{aid}' does not exist")
+            amenities.append(amenity)
+            
+        new_place = Place(
+            title       = place_data["title"],
+            description = place_data.get("description", ""),
+            price       = place_data["price"],
+            latitude    = place_data["latitude"],
+            longitude   = place_data["longitude"],
+            owner       = owner
+        )
+        new_place.amenities = amenities
+        
+    def get_place(self, place_id):
+        return self.place_repo.get(place_id)
     
+    def get_all_places(self):
+        return self.place_repo.get_all()
+
+    def update_place(self, place_id, data: dict):
+        """
+        Partial update. Unknown keys are ignored.
+        """
+        place = self.place_repo.get(place_id)
+        if not place:
+            return None
+
+        if "owner_id" in data:
+            owner = self.get_user(data["owner_id"])
+            if not owner:
+                raise ValueError("owner_id does not correspond to an existing user")
+            place.owner = owner
+
+        if "amenity_ids" in data:
+            amenities = []
+            for aid in data["amenity_ids"]:
+                amenity = self.get_amenity(aid)
+                if not amenity:
+                    raise ValueError(f"Amenity id '{aid}' does not exist")
+                amenities.append(amenity)
+            place.amenities = amenities
+
+        for field in ["title", "description", "price", "latitude", "longitude"]:
+            if field in data:
+                setattr(place, field, data[field])
+
+        place.updated_at = datetime.utcnow()
+        self.place_repo.update(place_id, place)
+        return place
