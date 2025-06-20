@@ -16,3 +16,8 @@ class Amenity(BaseModel):
 
         self.name = name
         self.description = description
+
+    # update ammenity attributes from a dict
+    def update(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
