@@ -1,7 +1,8 @@
 from app.persistence.repository import InMemoryRepository
+from datetime import datetime    
 from app.models.user import User
 from app.models.place import Place
-from datetime import datetime
+from app.models.review import Review
 
 class HBnBFacade:
     def __init__(self):
@@ -144,3 +145,107 @@ class HBnBFacade:
         place.updated_at = datetime.utcnow()
         self.place_repo.update(place_id, place)
         return place
+    
+    # REVIEW FACADE
+
+    def create_review(self, review_data: dict):
+        """
+        Expected review_data keys: text, user_id, place_id
+        """
+        user = self.get_user(review_data.get("user_id"))
+        if not user:
+            raise ValueError("Invalid user_id")
+
+        place = self.get_place(review_data.get("place_id"))
+        if not place:
+            raise ValueError("Invalid place_id")
+
+        review = Review(text=review_data["text"], user=user, place=place)
+        self.review_repo.add(review)
+
+        place.reviews.append(review)
+
+        return review
+
+
+    def get_review(self, review_id):
+        return self.review_repo.get(review_id)
+
+
+    def get_reviews_for_place(self, place_id):
+        place = self.get_place(place_id)
+        return place.reviews if place else None
+
+
+    def update_review(self, review_id, data: dict):
+        review = self.review_repo.get(review_id)
+        if not review:
+            return None
+
+        if "text" in data:
+            if not data["text"].strip():
+                raise ValueError("Review text cannot be empty")
+            review.text = data["text"].strip()
+
+        review.updated_at = datetime.utcnow()
+        self.review_repo.update(review_id, review)
+        return review
+
+
+    def delete_review(self, review_id):
+        review = self.review_repo.get(review_id)
+        if not review:
+            return False
+
+        review.place.reviews = [
+            r for r in review.place.reviews if r.id != review_id
+        ]
+        self.review_repo.delete(review_id)
+        return True
+    
+    def create_review(self, review_data: dict):
+        """
+        Expects: text, rating (1–5), user_id, place_id
+        """
+        user = self.get_user(review_data.get("user_id"))
+        if not user:
+            raise ValueError("Invalid user_id")
+
+        place = self.get_place(review_data.get("place_id"))
+        if not place:
+            raise ValueError("Invalid place_id")
+
+        rating = review_data.get("rating")
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
+            raise ValueError("Rating must be an integer between 1 and 5")
+
+        text = review_data.get("text")
+        if not text or not text.strip():
+            raise ValueError("Review text cannot be empty")
+
+        review = Review(text=text.strip(), rating=rating, user=user, place=place)
+        self.review_repo.add(review)
+
+        place.reviews.append(review)
+
+        return review
+
+
+    def update_review(self, review_id, data: dict):
+        review = self.review_repo.get(review_id)
+        if not review:
+            return None
+
+        if "text" in data:
+            if not data["text"].strip():
+                raise ValueError("Review text cannot be empty")
+            review.text = data["text"].strip()
+
+        if "rating" in data:
+            if not isinstance(data["rating"], int) or not (1 <= data["rating"] <= 5):
+                raise ValueError("Rating must be an integer between 1 and 5")
+            review.rating = data["rating"]
+
+        review.updated_at = datetime.utcnow()
+        self.review_repo.update(review_id, review)
+        return review

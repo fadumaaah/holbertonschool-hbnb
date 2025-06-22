@@ -1,6 +1,24 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
+# So i'm trying something new here, Saw some people do something similar to this, which is a "helper" function
+# which should help to convert a Place model instance to a response dictionary. (allowing us to link reviews if im not wrong)
+def place_to_response(place, expand_reviews=False):
+    data = place.to_dict()   # basic fields from BaseModel
+    if expand_reviews:
+        data["reviews"] = [
+            {
+                "id":     r.id,
+                "text":   r.text,
+                "rating": r.rating,
+                "user": {
+                    "id":    r.user.id,
+                    "email": getattr(r.user, "email", None)  # guard if email not on model
+                }
+            } for r in place.reviews
+        ]
+    return data
+
 api = Namespace("places", description="Place operations")
 
 amenity_id_field = fields.String(description="Amenity id")
