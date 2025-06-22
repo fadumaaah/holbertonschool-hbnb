@@ -25,7 +25,7 @@ class HBnBFacade:
         return (self.user_repo.get(user_id))
 
     def update_user(self, user_id, data):
-        # checks if user exists
+        # checks if user exists 
         user = self.get_user(user_id)
         # if user doesn't exist, returns None to indicate failure
         if not user:
@@ -47,7 +47,7 @@ class HBnBFacade:
             # email strip lower - removes spaces and converts to lowercase
             # user email lower - converts stored email to lowercase
             # compares them for equality
-            if user.email.lower() == email.strip().lower*():
+            if user.email.lower() == email.strip().lower():
                 return (user)
         # returns matching user or none
         return (None)

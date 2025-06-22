@@ -43,3 +43,36 @@ def put(self, amenity_id):
         raise ValueError("Name cannot be empty")
     updated_amenity = facade.update_amenity(amenity_id, amenity_data)
 ```
+
+. Failure: test_update_user_not_found returned 400 instead of 404
+Cause: The @api.route('/<user_id>') class (UserResource) was incorrectly nested inside the UserList class, so the PUT and GET methods were never properly registered with Flask.
+
+Fix: Move the UserResource class outside of UserList to correctly register /users/<user_id> routes.
+
+```python
+
+# Before (incorrect nesting)
+@api.route('/')
+class UserList(Resource):
+    ...
+    @api.route('/<user_id>')
+    class UserResource(Resource):
+
+# After (fixed)
+@api.route('/<user_id>')
+class UserResource(Resource):
+    ...
+```
+
+2. Error: AttributeError due to incorrect method call lower*()
+Cause: The .lower() method was written incorrectly in the email comparison logic, causing a runtime error during validation.
+
+Fix: Use the correct .lower() syntax to perform case-insensitive comparisons.
+
+```python
+# Incorrect
+if user.email.lower() == email.strip().lower*():
+
+# Correct
+if user.email.lower() == email.strip().lower():
+```
