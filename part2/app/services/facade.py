@@ -3,6 +3,7 @@ from datetime import datetime
 from app.models.user import User
 from app.models.place import Place
 from app.models.review import Review
+from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
@@ -61,11 +62,15 @@ class HBnBFacade:
         pass
 
     def create_amenity(self, amenity_data):
-       existing = self.get_amenity_by_name(amenity_data.get('name'))
+       name = amenity_data.get('name')
+       if not name:
+           raise ValueError("Missing required field: 'name'")
+       
+       existing = self.get_amenity_by_name(name)
        if existing:
            raise ValueError('Amenity already exists')
        # Create amenity instance from dict, add it to repo and return created amenity
-       amenity = amenity(**amenity_data)
+       amenity = Amenity(**amenity_data)
        self.amenity_repo.add(amenity)
        return amenity
 

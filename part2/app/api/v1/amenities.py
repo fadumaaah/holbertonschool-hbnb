@@ -63,6 +63,11 @@ class AmenityResource(Resource):
     def put(self, amenity_id):
         """Update an amenity's information"""
         amenity_data = api.payload
+
+        # Validate the name field is present and not empty
+        if 'name' not in amenity_data or not amenity_data['name'].strip():
+            return {'error': 'Amenity name is required and cannot be empty'}, 400
+        
         try:
             updated_amenity = facade.update_amenity(amenity_id, amenity_data)
             if not updated_amenity:
