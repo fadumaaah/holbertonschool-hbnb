@@ -32,6 +32,18 @@ class Place(BaseModel):
         self.reviews = []
         # List to store related amenties
         self.amenities = []
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "price": self.price,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "owner_id": self.owner.id if self.owner else None,
+            "amenity_ids": [amenity.id for amenity in self.amenities],
+        }
 
     def add_review(self, review):
         """

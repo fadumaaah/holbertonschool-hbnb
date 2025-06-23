@@ -16,7 +16,7 @@ class User(BaseModel):
 
         # validating first name exists and is 50 characters or less
         if not first_name or len(first_name) > 50:
-            raise ValueError("First namem is required to be less than 50 characters.")
+            raise ValueError("First name is required to be less than 50 characters.")
         if not last_name or len(last_name) > 50:
             raise ValueError("Last name is required to be less than 50 characters")
         if not self._is_valid_email(email):

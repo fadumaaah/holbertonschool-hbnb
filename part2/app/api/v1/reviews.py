@@ -11,14 +11,21 @@ review_model = api.model("Review", {
     "place_id": fields.String(required=True, description="Place id")
 })
 
+review_update_model = api.model("ReviewUpdate", {
+    "text":     fields.String(description="Review text"),
+    "rating":   fields.Integer(min=1, max=5, description="Rating between 1 and 5")
+})
+
 def _to_response(review):
     return {
         "id":   review.id,
         "text": review.text,
-        "user": {
-            "id": review.user.id,
-            "email": review.user.email
-        },
+        "rating": review.rating,
+        # Hiding user email and id as that is info that shouldn't be seen
+        # "user": {
+        #     "id": review.user.id,
+        #     "email": review.user.email
+        # },
         "place_id": review.place.id,
         "created_at": review.created_at.isoformat(),
         "updated_at": review.updated_at.isoformat()
@@ -35,6 +42,12 @@ class ReviewList(Resource):
             return _to_response(rev), 201
         except ValueError as err:
             return {"error": str(err)}, 400
+    
+    @api.response(200, "Success")
+    def get(self):
+        """Return *all* reviews"""
+        reviews = facade.get_all_reviews()
+        return [_to_response(r) for r in reviews], 200
 
 @api.route("/<review_id>")
 class ReviewResource(Resource):
@@ -46,7 +59,7 @@ class ReviewResource(Resource):
             return {"error": "Review not found"}, 404
         return _to_response(rev), 200
 
-    @api.expect(review_model, validate=True)
+    @api.expect(review_update_model, validate=True)
     @api.response(200, "Updated")
     @api.response(404, "Not found")
     @api.response(400, "Bad input")

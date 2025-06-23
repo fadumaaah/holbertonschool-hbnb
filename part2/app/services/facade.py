@@ -113,6 +113,8 @@ class HBnBFacade:
             owner       = owner
         )
         new_place.amenities = amenities
+        self.place_repo.add(new_place)
+        return new_place
         
     def get_place(self, place_id):
         return self.place_repo.get(place_id)
@@ -148,7 +150,7 @@ class HBnBFacade:
                 setattr(place, field, data[field])
 
         place.updated_at = datetime.utcnow()
-        self.place_repo.update(place_id, place)
+        self.place_repo.update(place_id, data)
         return place
     
     # REVIEW FACADE
@@ -175,6 +177,9 @@ class HBnBFacade:
 
     def get_review(self, review_id):
         return self.review_repo.get(review_id)
+    
+    def get_all_reviews(self):
+        return self.review_repo.get_all()
 
 
     def get_reviews_for_place(self, place_id):
@@ -252,5 +257,5 @@ class HBnBFacade:
             review.rating = data["rating"]
 
         review.updated_at = datetime.utcnow()
-        self.review_repo.update(review_id, review)
+        self.review_repo.update(review_id, data)
         return review

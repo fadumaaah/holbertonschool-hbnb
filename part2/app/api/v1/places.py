@@ -27,19 +27,38 @@ place_model = api.model(
     "Place",
     {
         "id": fields.String(readOnly=True, description="Unique id"),
-        "name": fields.String(required=True, description="Place name"),
+        "title": fields.String(required=True, description="Place title"),
         "description": fields.String(description="Description"),
-        "city_id": fields.String(required=True, description="City id"),
-        "user_id": fields.String(required=True, description="Owner (user) id"),
+        "city_id": fields.String(description="City id"),
+        "owner_id": fields.String(required=True, description="Owner (user) id"),
         "number_rooms": fields.Integer(min=0, description="# rooms"),
         "number_bathrooms": fields.Integer(min=0, description="# bathrooms"),
         "max_guest": fields.Integer(min=0, description="Max guests"),
-        "price_by_night": fields.Integer(min=0, description="Price (cents)"),
+        "price": fields.Float(min=0, description="Price (cents)"),
         "latitude": fields.Float(description="Latitude"),
         "longitude": fields.Float(description="Longitude"),
-        "amenity_ids": fields.List(amenity_id_field, description="List of amenity ids"),
+        "amenities": fields.List(amenity_id_field, description="List of amenity ids"),
     },
 )
+
+# Second model for when we update place - above has required fields that is for post.
+place_update_model = api.model(
+    "PlaceUpdate",
+    {
+        "title": fields.String(description="Place title"),
+        "description": fields.String(description="Description"),
+        "city_id": fields.String(description="City id"),
+        "owner_id": fields.String(description="Owner (user) id"),
+        "number_rooms": fields.Integer(min=0, description="# rooms"),
+        "number_bathrooms": fields.Integer(min=0, description="# bathrooms"),
+        "max_guest": fields.Integer(min=0, description="Max guests"),
+        "price": fields.Float(min=0, description="Price (cents)"),
+        "latitude": fields.Float(description="Latitude"),
+        "longitude": fields.Float(description="Longitude"),
+        "amenities": fields.List(fields.String, description="List of amenity ids"),
+    },
+)
+
 
 @api.route("/")
 class PlaceList(Resource):
@@ -70,9 +89,9 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
-        return place.to_dict(expand=True), 200
+        return place.to_dict(), 200
 
-    @api.expect(place_model, validate=True)
+    @api.expect(place_update_model, validate=True)
     @api.response(200, "Updated")
     @api.response(404, "Not found")
     @api.response(400, "Bad input")
