@@ -257,5 +257,5 @@ class HBnBFacade:
             review.rating = data["rating"]
 
         review.updated_at = datetime.utcnow()
-        self.review_repo.update(review_id, data)
+        self.review_repo.update(review_id, review)
         return review

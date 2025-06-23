@@ -10,11 +10,22 @@ class TestPlaceEndpoints(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client()
         facade.place_repo._storage.clear()
+        facade.user_repo._storage.clear()  # Clear users repo too
+
+        # Create a test user and get their id
+        user_resp = self.client.post('/api/v1/users/', json={
+            "first_name": "Test",
+            "last_name": "User",
+            "email": "testuser@example.com"
+        })
+        self.assertEqual(user_resp.status_code, 201)
+        self.owner_id = user_resp.get_json()['id']
 
     def test_create_place_success(self):
         response = self.client.post('/api/v1/places/', json={
             "title": "Cozy Cottage",
             "price": 100,
+            "owner_id": self.owner_id,
             "latitude": 45.0,
             "longitude": 90.0
         })
@@ -24,6 +35,7 @@ class TestPlaceEndpoints(unittest.TestCase):
         response = self.client.post('/api/v1/places/', json={
             "title": "",
             "price": 100,
+            "owner_id": self.owner_id,
             "latitude": 45.0,
             "longitude": 90.0
         })
@@ -33,6 +45,7 @@ class TestPlaceEndpoints(unittest.TestCase):
         response = self.client.post('/api/v1/places/', json={
             "title": "Nice Place",
             "price": -50,
+            "owner_id": self.owner_id,
             "latitude": 45.0,
             "longitude": 90.0
         })
@@ -43,6 +56,7 @@ class TestPlaceEndpoints(unittest.TestCase):
             response = self.client.post('/api/v1/places/', json={
                 "title": "Test Place",
                 "price": 50,
+                "owner_id": self.owner_id,
                 "latitude": lat,
                 "longitude": 0
             })
@@ -53,6 +67,7 @@ class TestPlaceEndpoints(unittest.TestCase):
             response = self.client.post('/api/v1/places/', json={
                 "title": "Test Place",
                 "price": 50,
+                "owner_id": self.owner_id,
                 "latitude": 0,
                 "longitude": lon
             })
@@ -67,6 +82,7 @@ class TestPlaceEndpoints(unittest.TestCase):
         create_resp = self.client.post('/api/v1/places/', json={
             "title": "Old Title",
             "price": 80,
+            "owner_id": self.owner_id,
             "latitude": 10,
             "longitude": 10
         })
@@ -74,6 +90,7 @@ class TestPlaceEndpoints(unittest.TestCase):
         update_resp = self.client.put(f'/api/v1/places/{place_id}', json={
             "title": "New Title",
             "price": 90,
+            "owner_id": self.owner_id,
             "latitude": 20,
             "longitude": 20
         })
@@ -83,6 +100,7 @@ class TestPlaceEndpoints(unittest.TestCase):
         create_resp = self.client.post('/api/v1/places/', json={
             "title": "Some Place",
             "price": 50,
+            "owner_id": self.owner_id,
             "latitude": 0,
             "longitude": 0
         })
@@ -90,6 +108,7 @@ class TestPlaceEndpoints(unittest.TestCase):
         update_resp = self.client.put(f'/api/v1/places/{place_id}', json={
             "title": "Updated Place",
             "price": 60,
+            "owner_id": self.owner_id,
             "latitude": 100,  # invalid latitude
             "longitude": 0
         })
@@ -100,6 +119,7 @@ class TestPlaceEndpoints(unittest.TestCase):
         response = self.client.put(f'/api/v1/places/{fake_id}', json={
             "title": "Ghost Place",
             "price": 70,
+            "owner_id": self.owner_id,
             "latitude": 0,
             "longitude": 0
         })

@@ -1,0 +1,45 @@
+.FF...E.E.E
+======================================================================
+ERROR: test_delete_review_success (tests.test_reviews.TestReviewEndpoints)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/faduma/hol_repos/holbertonschool-hbnb/part2/tests/test_reviews.py", line 139, in test_delete_review_success
+    review_id = create_resp.get_json()['id']
+KeyError: 'id'
+
+======================================================================
+ERROR: test_update_review_empty_text (tests.test_reviews.TestReviewEndpoints)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/faduma/hol_repos/holbertonschool-hbnb/part2/tests/test_reviews.py", line 116, in test_update_review_empty_text
+    review_id = create_resp.get_json()['id']
+KeyError: 'id'
+
+======================================================================
+ERROR: test_update_review_success (tests.test_reviews.TestReviewEndpoints)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/faduma/hol_repos/holbertonschool-hbnb/part2/tests/test_reviews.py", line 102, in test_update_review_success
+    review_id = create_resp.get_json()['id']
+KeyError: 'id'
+
+======================================================================
+FAIL: test_create_review_invalid_place_id (tests.test_reviews.TestReviewEndpoints)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/faduma/hol_repos/holbertonschool-hbnb/part2/tests/test_reviews.py", line 89, in test_create_review_invalid_place_id
+    self.assertEqual(response.status_code, 404)
+AssertionError: 400 != 404
+
+======================================================================
+FAIL: test_create_review_invalid_user_id (tests.test_reviews.TestReviewEndpoints)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/faduma/hol_repos/holbertonschool-hbnb/part2/tests/test_reviews.py", line 80, in test_create_review_invalid_user_id
+    self.assertEqual(response.status_code, 404)
+AssertionError: 400 != 404
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.064s
+
+FAILED (failures=2, errors=3)
