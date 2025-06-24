@@ -18,7 +18,7 @@ class HBnBFacade:
         # using dictionary unpacking (**)
         user = User(**user_data)
         self.user_repo.add(user)
-        return (user)
+        return user
 
     # takes user id and returns the user object (or None if not found)
     def get_user(self, user_id):
@@ -29,11 +29,11 @@ class HBnBFacade:
         user = self.get_user(user_id)
         # if user doesn't exist, returns None to indicate failure
         if not user:
-            return (None)
+            return None
         # if user exists, calls repo to update with new data
         self.user_repo.update(user_id, data)
         # fetches and returns the updated user (to ensure we have the latest data with updated timestamps)
-        return (self.user_repo.get(user_id))
+        return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
         """Get user by email (case-insensitive)"""
@@ -54,7 +54,7 @@ class HBnBFacade:
 
     # returns list of all users
     def get_all_users(self):
-        return (self.user_repo.get_all())
+        return self.user_repo.get_all()
 
     # Placeholder method for fetching a place by ID
     def get_place(self, place_id):
@@ -155,26 +155,6 @@ class HBnBFacade:
     
     # REVIEW FACADE
 
-    def create_review(self, review_data: dict):
-        """
-        Expected review_data keys: text, user_id, place_id
-        """
-        user = self.get_user(review_data.get("user_id"))
-        if not user:
-            raise ValueError("Invalid user_id")
-
-        place = self.get_place(review_data.get("place_id"))
-        if not place:
-            raise ValueError("Invalid place_id")
-
-        review = Review(text=review_data["text"], user=user, place=place)
-        self.review_repo.add(review)
-
-        place.reviews.append(review)
-
-        return review
-
-
     def get_review(self, review_id):
         return self.review_repo.get(review_id)
     
@@ -198,21 +178,10 @@ class HBnBFacade:
             review.text = data["text"].strip()
 
         review.updated_at = datetime.utcnow()
-        self.review_repo.update(review_id, review)
         return review
 
 
-    def delete_review(self, review_id):
-        review = self.review_repo.get(review_id)
-        if not review:
-            return False
 
-        review.place.reviews = [
-            r for r in review.place.reviews if r.id != review_id
-        ]
-        self.review_repo.delete(review_id)
-        return True
-    
     def create_review(self, review_data: dict):
         """
         Expects: text, rating (1–5), user_id, place_id
@@ -224,6 +193,9 @@ class HBnBFacade:
         place = self.get_place(review_data.get("place_id"))
         if not place:
             raise ValueError("Invalid place_id")
+        
+        if place.owner and place.owner.id == user.id:
+            raise ValueError("Users cannot review their own place")
 
         rating = review_data.get("rating")
         if not isinstance(rating, int) or not (1 <= rating <= 5):
@@ -257,5 +229,16 @@ class HBnBFacade:
             review.rating = data["rating"]
 
         review.updated_at = datetime.utcnow()
-        self.review_repo.update(review_id, review)
         return review
+    
+    def delete_review(self, review_id):
+        review = self.review_repo.get(review_id)
+        if not review:
+            return False
+
+        review.place.reviews = [
+            r for r in review.place.reviews if r.id != review_id
+        ]
+        self.review_repo.delete(review_id)
+        return True
+    

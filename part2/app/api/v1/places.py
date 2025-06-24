@@ -19,6 +19,10 @@ def place_to_response(place, expand_reviews=False):
         ]
     return data
 
+# Since we added multiple inputs like number_rooms, I created a helper function to exclude any variables with null values from the response, ensuring only meaningful data is displayed.
+def clean_nulls(data: dict) -> dict:
+    return {k: v for k, v in data.items() if v is not None}
+
 api = Namespace("places", description="Place operations")
 
 amenity_id_field = fields.String(description="Amenity id")
@@ -69,7 +73,8 @@ class PlaceList(Resource):
         """Create a new place"""
         try:
             new_place = facade.create_place(api.payload)
-            return api.marshal(new_place.to_dict(), place_model), 201
+            data = clean_nulls(new_place.to_dict())
+            return data, 201
         except ValueError as err:
             return {"error": str(err)}, 400
 
@@ -77,7 +82,8 @@ class PlaceList(Resource):
     def get(self):
         """Return *all* places"""
         places = facade.get_all_places()
-        return [p.to_dict() for p in places], 200
+        cleaned_places = [clean_nulls(p.to_dict()) for p in places]
+        return cleaned_places, 200
 
 
 @api.route("/<place_id>")
@@ -89,7 +95,8 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
-        return place.to_dict(), 200
+        data = clean_nulls(place.to_dict())
+        return data, 200
 
     @api.expect(place_update_model, validate=True)
     @api.response(200, "Updated")
