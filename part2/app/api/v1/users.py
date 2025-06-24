@@ -20,11 +20,13 @@ class UserList(Resource):
     @api.response(400, "Email already registered or invalid input data")
     def post(self):
         user_data = api.payload
+        email = user_data.get("email", "").strip().lower()
         try:
-            existing_user = facade.get_user_by_email(user_data["email"])
+            existing_user = facade.get_user_by_email(email)
             if existing_user:
                 return {"error": "Email already registered"}, 400
-
+            
+            user_data["email"] = email 
             new_user = facade.create_user(user_data)
             return {
                 "id": new_user.id,
@@ -77,10 +79,13 @@ class UserResource(Resource):
             if not user:
                 return {'error': 'User not found'}, 404
 
-            if 'email' in data and data['email'] != user.email:
-                existing_user = facade.get_user_by_email(data['email'])
-                if existing_user:
-                    return {'error': 'Email already registered'}, 400
+            if 'email' in data:
+                new_email = data['email'].strip().lower()
+                if new_email != user.email.strip().lower():
+                    existing_user = facade.get_user_by_email(new_email)
+                    if existing_user:
+                        return {'error': 'Email already registered'}, 400
+                data['email'] = new_email
 
             updated_user = facade.update_user(user_id, data)
             if updated_user is None:

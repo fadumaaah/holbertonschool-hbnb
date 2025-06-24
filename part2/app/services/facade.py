@@ -16,6 +16,7 @@ class HBnBFacade:
     # takes a dictionary of user data
     def create_user(self, user_data):
         # using dictionary unpacking (**)
+        user_data["email"] = user_data["email"].strip().lower()
         user = User(**user_data)
         self.user_repo.add(user)
         return user
